@@ -1,0 +1,9 @@
+# Создать requirements.txt
+echo "sphinx==7.2.6" > requirements.txt
+echo "sphinx-rtd-theme==2.0.0" >> requirements.txt
+
+# Проверьте, что файл создался
+cat requirements.txt
+# Должны увидеть:
+# sphinx==7.2.6
+# sphinx-rtd-theme==2.0.0
