@@ -23,6 +23,7 @@ class ClientProtocolError(ClientError):
     """Исключение, возникающее при ошибках протокола обмена с сервером.
 
     Выбрасывается в следующих случаях:
+
     - Сервер возвращает статус "error"
     - Некорректный формат ответа от сервера
     - Неизвестный статус ответа
@@ -39,21 +40,26 @@ class Client:
     Поддерживает операции put (сохранение метрики) и get (получение метрик).
 
     Attributes:
+
         connection: Кортеж (хост, порт) для подключения к серверу
         timeout: Тайм-аут соединения в секундах
 
     Example:
+
         Создание клиента:
-        client = Client('127.0.0.1', 8888, timeout=5)
+          client = Client('127.0.0.1', 8888, timeout=5)
 
         Отправка метрик:
-        client.put('cpu.load', 0.75)  # с текущим временем
-        client.put('cpu.load', 0.82, 1609459200)  # с указанным timestamp
+          client.put('cpu.load', 0.75)  # с текущим временем
+
+          client.put('cpu.load', 0.82, 1609459200)  # с указанным timestamp
 
         Получение метрик:
-        cpu_metrics = client.get('cpu.load')
-        # символ '*' используется для получения всех метрик
-        all_metrics = client.get('*')
+          cpu_metrics = client.get('cpu.load')
+
+          # символ '*' используется для получения всех метрик
+
+          all_metrics = client.get('*')
     """
 
     def __init__(
@@ -66,12 +72,14 @@ class Client:
         Инициализация клиента.
 
         Args:
+
             host: Адрес сервера (например, 'localhost' или '127.0.0.1')
             port: Порт сервера (например, 8888)
             timeout: Максимальное время ожидания ответа в секундах.
                     Если None - ожидание бесконечное.
 
         Example:
+
             client = Client('localhost', 8888, timeout=3)
         """
         self.connection: Tuple[str, int] = (host, port)
@@ -82,16 +90,20 @@ class Client:
         Отправка команды серверу и получение ответа.
 
         Args:
+
             cmd: Команда для отправки (должна заканчиваться символом '\\n')
 
         Returns:
+
             str: Тело ответа от сервера (данные после строки статуса)
 
         Raises:
+
             ClientSocketError: При ошибках соединения
             ClientProtocolError: При ошибках протокола
 
         Note:
+
             Формат ответа сервера:
             ok\\n
             <metric1> <value> <timestamp>\\n
@@ -151,15 +163,18 @@ class Client:
         Отправка метрики на сервер.
 
         Args:
+
             metric: Имя метрики (например, 'cpu.load')
             value: Значение метрики
             timestamp: Временная метка (если None - используется текущее время)
 
         Raises:
+
             ClientSocketError: При ошибках соединения
             ClientProtocolError: При ошибках протокола
 
         Example:
+
             client = Client('localhost', 8888)
             client.put('cpu.load', 0.75)
             client.put('memory.used', 1024.5, 1609459200)
@@ -174,29 +189,37 @@ class Client:
         Получение метрик с сервера.
 
         Args:
+
             metric_key: Имя метрики для получения. Специальное значение '*'
                        означает запрос всех метрик.
 
         Returns:
+
             Dict[str, List[Tuple[int, float]]]: Словарь с метриками, где
             ключ - имя метрики, значение - список кортежей (timestamp, value),
             отсортированный по timestamp. Если метрика не найдена,
             возвращается пустой словарь.
 
         Raises:
+
             ClientSocketError: При ошибках соединения
             ClientProtocolError: При ошибках протокола
 
         Example:
+
             client = Client('localhost', 8888)
 
             # Получение конкретной метрики
+
             cpu_data = client.get('cpu.load')
+
             for timestamp, value in cpu_data.get('cpu.load', []):
                 print(f'{timestamp}: {value}')
 
             # Получение всех метрик
+
             all_data = client.get('*')
+
             for name, values in all_data.items():
                 print(f'{name}: {len(values)} значений')
         """
